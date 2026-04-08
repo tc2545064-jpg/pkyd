@@ -1,0 +1,2105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>屏"困一代 · 视界危机</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<style>
+/* ===== 全局变量 ===== */
+:root {
+  --ink: #0d0d0d;
+  --paper: #f5f0e8;
+  --red: #c0392b;
+  --red-light: #e74c3c;
+  --gold: #b8860b;
+  --gold-light: #f0c040;
+  --blue-ink: #1a3a5c;
+  --grey: #888;
+  --light-grey: #ddd;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  font-size: 112.5%; /* 全文字号放大约一号（约+1~2px 等效） */
+}
+
+html, body {
+  width: 100%; height: 100%;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: 'Noto Serif SC', 'STSong', 'SimSun', serif;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== 重要数据高亮（比正常字号大一号）===== */
+.em-data {
+  font-size: 1.125em;
+  font-weight: 900;
+  color: var(--red-light);
+  display: inline;
+}
+
+/* ===== 进度条 ===== */
+#progress-bar {
+  position: fixed; top: 0; left: 0;
+  height: 3px;
+  background: linear-gradient(to right, var(--red), var(--gold-light));
+  z-index: 999;
+  transition: width 0.4s ease;
+  width: 0%;
+}
+
+/* ===== SWIPER ===== */
+.swiper { width: 100%; height: 100%; }
+.swiper-slide {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: flex-start;
+  padding: 50px 30px 40px;
+  position: relative; overflow-y: auto; overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+/* 内容较少的页面保持垂直居中 */
+#slide-cover, #slide-end, #slide-rule, #slide-video {
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* ===== 背景纹理 ===== */
+.swiper-slide::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.015'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none; z-index: 0;
+}
+
+/* 所有 slide 内部内容层级 */
+.slide-inner { position: relative; z-index: 1; width: 100%; max-width: 480px; }
+
+/* ===== PAGE 0 · 封面 ===== */
+#slide-cover { background: var(--ink); }
+#slide-cover .noise-overlay {
+  position: absolute; inset: 0; z-index: 0;
+  background: radial-gradient(ellipse at 30% 40%, rgba(192,57,43,0.15) 0%, transparent 60%),
+              radial-gradient(ellipse at 70% 70%, rgba(184,134,11,0.1) 0%, transparent 50%);
+}
+.cover-eyeball {
+  width: 140px; height: 140px;
+  border-radius: 50%;
+  border: 2px solid rgba(192,57,43,0.6);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 30px;
+  position: relative;
+  animation: iris-pulse 3s ease-in-out infinite;
+}
+.cover-eyeball::before {
+  content: '';
+  position: absolute;
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #555, var(--ink));
+  border: 2px solid rgba(192,57,43,0.4);
+}
+.cover-eyeball::after {
+  content: '';
+  position: absolute;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #666, #111);
+}
+.cover-pupil-dot {
+  position: absolute;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #fff;
+  top: 38px; left: 48px; z-index: 1;
+}
+@keyframes iris-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(192,57,43,0.3), 0 0 40px rgba(192,57,43,0.1); transform: scale(1); }
+  50% { box-shadow: 0 0 0 20px rgba(192,57,43,0), 0 0 60px rgba(192,57,43,0.2); transform: scale(1.03); }
+}
+.cover-tag {
+  font-size: 0.65rem; letter-spacing: 4px; color: var(--red);
+  border: 1px solid rgba(192,57,43,0.4); padding: 4px 12px;
+  display: inline-block; margin-bottom: 16px;
+  text-transform: uppercase;
+}
+.cover-title {
+  font-size: 3rem; font-weight: 900; line-height: 1.1;
+  letter-spacing: 2px;
+  color: #fff;
+  text-shadow: 0 0 40px rgba(255,255,255,0.3);
+  margin-bottom: 8px;
+}
+.cover-subtitle {
+  font-size: 0.9rem; color: rgba(255,255,255,0.45);
+  letter-spacing: 3px; margin-bottom: 50px;
+}
+.cover-stat-row {
+  display: flex; justify-content: space-around;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  padding: 20px 0; margin-bottom: 40px;
+}
+.cover-stat-item { text-align: center; }
+.cover-stat-num {
+  font-size: 1.8rem; font-weight: 900; color: var(--red-light);
+  display: block;
+}
+.cover-stat-label { font-size: 0.65rem; color: var(--grey); letter-spacing: 1px; }
+.scroll-hint {
+  font-size: 0.7rem; color: rgba(255,255,255,0.3);
+  letter-spacing: 3px; animation: hint-fade 2s ease-in-out infinite;
+}
+.scroll-hint span { display: block; text-align: center; }
+.scroll-arrow {
+  width: 20px; height: 20px;
+  border-right: 1px solid rgba(255,255,255,0.3);
+  border-bottom: 1px solid rgba(255,255,255,0.3);
+  transform: rotate(45deg); margin: 8px auto 0;
+  animation: arrow-bounce 1.5s ease-in-out infinite;
+}
+@keyframes hint-fade { 0%,100%{opacity:0.4} 50%{opacity:1} }
+@keyframes arrow-bounce { 0%,100%{transform:rotate(45deg) translateY(0)} 50%{transform:rotate(45deg) translateY(5px)} }
+
+/* ===== 封面模糊交互 ===== */
+#cover-content {
+  filter: blur(12px);
+  transition: filter 1.2s ease;
+  pointer-events: none;
+}
+#cover-content.clear { filter: blur(0px); pointer-events: auto; }
+
+#blur-overlay {
+  position: absolute; inset: 0; z-index: 10;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 28px;
+  background: rgba(13,13,13,0.3);
+  backdrop-filter: blur(2px);
+  transition: opacity 0.8s ease;
+}
+#blur-overlay.hidden { opacity: 0; pointer-events: none; }
+#blur-text {
+  text-align: center;
+}
+
+/* 故障艺术字 */
+.glitch-wrap { position: relative; text-align: center; }
+.glitch-text {
+  font-size: 2.8rem; font-weight: 900;
+  line-height: 1.25; letter-spacing: 5px;
+  color: #ffffff;
+  text-shadow: 0 0 30px rgba(255,255,255,0.12);
+  position: relative;
+  animation: glitch-main 3s infinite;
+}
+/* 红色错位层1 */
+.glitch-text::before {
+  content: attr(data-text);
+  position: absolute; top:0; left:0; width:100%;
+  color: #e74c3c;
+  clip-path: polygon(0 15%, 100% 15%, 100% 38%, 0 38%);
+  transform: translateX(-5px);
+  animation: glitch-red-a 3s infinite;
+  opacity: 0;
+}
+/* 红色错位层2 */
+.glitch-text::after {
+  content: attr(data-text);
+  position: absolute; top:0; left:0; width:100%;
+  color: #ff6b6b;
+  clip-path: polygon(0 60%, 100% 60%, 100% 78%, 0 78%);
+  transform: translateX(4px);
+  animation: glitch-red-b 3s infinite;
+  opacity: 0;
+}
+/* 划痕线 */
+.scratch { position:absolute; height:1px; background:rgba(231,76,60,0.45); animation:scratch-anim 3s infinite; left:0; }
+.s1 { width:100%; top:35%; }
+.s2 { width:55%; top:68%; left:22%; opacity:0.35; animation-delay: 0.05s; }
+
+@keyframes glitch-main {
+  0%,88%,100% { transform:translate(0); }
+  90% { transform:translate(-2px, 1px); }
+  92% { transform:translate(2px,-1px); }
+  94% { transform:translate(-1px, 2px); }
+  96% { transform:translate(1px,-1px); }
+}
+@keyframes glitch-red-a {
+  0%,88%,100% { opacity:0; transform:translateX(-5px); clip-path:polygon(0 15%,100% 15%,100% 38%,0 38%); }
+  90% { opacity:1; transform:translateX(-10px); clip-path:polygon(0 8%,100% 8%,100% 28%,0 28%); }
+  92% { opacity:0.9; transform:translateX(5px); clip-path:polygon(0 48%,100% 48%,100% 63%,0 63%); }
+  95% { opacity:0; }
+}
+@keyframes glitch-red-b {
+  0%,88%,100% { opacity:0; transform:translateX(4px); clip-path:polygon(0 60%,100% 60%,100% 78%,0 78%); }
+  91% { opacity:0.85; transform:translateX(10px); clip-path:polygon(0 72%,100% 72%,100% 88%,0 88%); }
+  93% { opacity:0.7; transform:translateX(-6px); clip-path:polygon(0 30%,100% 30%,100% 46%,0 46%); }
+  96% { opacity:0; }
+}
+@keyframes scratch-anim {
+  0%,87%,100% { opacity:0; transform:scaleX(1); }
+  89% { opacity:1; transform:scaleX(0.7) translateX(15%); }
+  92% { opacity:0.4; transform:scaleX(1.1) translateX(-5%); }
+  95% { opacity:0; }
+}
+
+/* 开场强制触发一次故障 */
+.glitch-once .glitch-text::before {
+  animation: glitch-red-a 0.6s steps(1) 1 !important;
+}
+.glitch-once .glitch-text::after {
+  animation: glitch-red-b 0.6s steps(1) 1 !important;
+}
+.glitch-once .scratch {
+  animation: scratch-anim 0.6s steps(1) 1 !important;
+}
+#blur-btn {
+  padding: 14px 36px;
+  border: 1.5px solid rgba(192,57,43,0.7);
+  border-radius: 30px;
+  background: rgba(192,57,43,0.12);
+  color: var(--red-light); font-size: 0.95rem; font-weight: 700;
+  cursor: pointer; letter-spacing: 3px; font-family: inherit;
+  animation: blur-pulse 2s ease-in-out infinite;
+  transition: background 0.3s;
+}
+#blur-btn:hover { background: rgba(192,57,43,0.25); }
+@keyframes blur-pulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(192,57,43,0.4); }
+  50% { box-shadow: 0 0 0 14px rgba(192,57,43,0); }
+}
+
+/* ===== PAGE 1 · 案例1 视网膜脱离 ===== */
+.case-slide { background: var(--ink); }
+.case-slide .slide-inner { padding: 0; }
+
+.chapter-label {
+  font-size: 0.6rem; letter-spacing: 4px; color: var(--red);
+  margin-bottom: 20px; display: flex; align-items: center; gap: 10px;
+}
+.chapter-label::after {
+  content: ''; flex: 1; height: 1px; background: rgba(192,57,43,0.3);
+}
+
+.case-headline {
+  font-size: 1.7rem; font-weight: 900; line-height: 1.3;
+  margin-bottom: 20px; color: #fff;
+}
+.case-headline em { color: var(--red-light); font-style: normal; }
+
+.case-pull-quote {
+  border-left: 3px solid var(--red);
+  padding: 12px 16px;
+  background: rgba(192,57,43,0.06);
+  margin: 20px 0;
+  border-radius: 0 6px 6px 0;
+  font-size: 1rem; line-height: 1.8; color: rgba(255,255,255,0.85);
+  opacity: 0; transform: translateX(-15px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.case-pull-quote.visible { opacity: 1; transform: translateX(0); }
+.case-pull-quote strong { color: var(--gold-light); }
+
+.case-body {
+  font-size: 0.88rem; line-height: 2; color: rgba(255,255,255,0.55);
+  margin-top: 16px;
+  opacity: 0; transform: translateY(10px);
+  transition: opacity 0.8s 0.3s ease, transform 0.8s 0.3s ease;
+}
+.case-body.visible { opacity: 1; transform: translateY(0); }
+.case-source {
+  margin-top: 16px; padding-top: 10px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  font-size: 0.6rem; color: rgba(255,255,255,0.2);
+  letter-spacing: 0.5px; line-height: 1.8;
+}
+
+.case-data-chip {
+  display: inline-block;
+  background: rgba(192,57,43,0.15);
+  border: 1px solid rgba(192,57,43,0.3);
+  color: var(--red-light);
+  padding: 3px 10px; border-radius: 20px;
+  font-size: 0.8rem; font-weight: 700;
+  margin: 0 2px;
+}
+
+/* ===== PAGE 2 · 案例2 急性青光眼 ===== */
+.dark-phone-visual {
+  width: 88px; height: 148px;
+  border: 2px solid rgba(255,255,255,0.2);
+  border-radius: 18px;
+  background: #080808;
+  margin: 0 auto 24px;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.05), 0 0 40px rgba(120,180,255,0.15);
+}
+/* 手机顶部刘海 */
+.dark-phone-visual::before {
+  content: '';
+  position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+  width: 28px; height: 5px; border-radius: 3px;
+  background: rgba(255,255,255,0.15); z-index: 2;
+}
+.dark-phone-visual .phone-glow {
+  width: 64px; height: 100px;
+  background: linear-gradient(180deg,
+    rgba(100,180,255,0.35) 0%,
+    rgba(80,160,255,0.2) 40%,
+    rgba(60,140,255,0.08) 100%);
+  border-radius: 8px;
+  animation: glow-flicker 1.8s ease-in-out infinite;
+  position: relative;
+}
+/* 模拟屏幕内容线条 */
+.dark-phone-visual .phone-glow::before {
+  content: '';
+  position: absolute; top: 14px; left: 8px; right: 8px;
+  height: 2px; border-radius: 2px;
+  background: rgba(255,255,255,0.25);
+  box-shadow: 0 10px 0 rgba(255,255,255,0.15), 0 20px 0 rgba(255,255,255,0.1), 0 30px 0 rgba(255,255,255,0.1);
+}
+@keyframes glow-flicker {
+  0%,100%{ opacity:0.7; transform:scaleY(1); }
+  50%{ opacity:1; transform:scaleY(1.01); }
+}
+/* 底部数据标签 */
+.dark-phone-visual::after {
+  content: '82.13%';
+  position: absolute; bottom: 8px; left: 0; right: 0;
+  text-align: center; font-size: 0.65rem; color: rgba(100,180,255,0.8);
+  font-weight: 900; letter-spacing: 1px;
+}
+
+/* ===== PAGE 3 · 案例3 高度近视 ===== */
+.blur-demo {
+  display: flex; gap: 16px; margin: 20px 0;
+  align-items: center; justify-content: center;
+}
+.blur-card {
+  flex: 1; padding: 12px; border-radius: 8px;
+  text-align: center; font-size: 0.75rem;
+}
+.blur-card.normal {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.8);
+}
+.blur-card.blurred {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.05);
+  color: rgba(255,255,255,0.2);
+  filter: blur(3px);
+}
+.blur-card .blur-num { font-size: 2rem; font-weight: 900; display: block; margin-bottom: 4px; }
+.blur-card.normal .blur-num { color: #fff; }
+.blur-card.blurred .blur-num { color: rgba(255,255,255,0.3); }
+
+/* ===== PAGE 4 · 数据总览 ===== */
+#slide-data1 { background: var(--ink); }
+.data-title {
+  font-size: 1.1rem; font-weight: 700; color: #fff;
+  margin-bottom: 6px; letter-spacing: 1px;
+}
+.data-subtitle { font-size: 0.75rem; color: var(--grey); margin-bottom: 20px; }
+#chart-myopia { width: 100%; height: 260px; }
+.data-note {
+  font-size: 0.72rem; line-height: 1.8; color: rgba(255,255,255,0.35);
+  border-top: 1px solid rgba(255,255,255,0.06); padding-top: 14px; margin-top: 10px;
+}
+.data-note b { color: var(--red-light); }
+
+/* ===== PAGE 5 · 用屏习惯 ===== */
+#slide-data2 { background: var(--ink); }
+#chart-habits { width: 100%; height: 240px; }
+.habit-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 10px; margin-top: 16px;
+}
+.habit-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 10px; padding: 12px;
+  text-align: center;
+  opacity: 0; transform: translateY(15px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.habit-card.visible { opacity: 1; transform: translateY(0); }
+.habit-card .hc-num {
+  font-size: 1.6rem; font-weight: 900; display: block;
+}
+.habit-card .hc-label { font-size: 0.65rem; color: var(--grey); margin-top: 4px; display: block; }
+.habit-card.danger .hc-num { color: var(--red-light); }
+.habit-card.warn .hc-num { color: var(--gold-light); }
+.habit-card.ok .hc-num { color: #2ecc71; }
+
+/* ===== PAGE 6 · 学术数据 ===== */
+#slide-research { background: var(--ink); }
+.research-block {
+  background: rgba(26,58,92,0.15);
+  border: 1px solid rgba(26,58,92,0.4);
+  border-radius: 12px; padding: 18px;
+  margin-bottom: 14px;
+  opacity: 0; transform: translateX(-20px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.research-block.visible { opacity: 1; transform: translateX(0); }
+.research-block:nth-child(2) { transition-delay: 0.15s; }
+.research-block:nth-child(3) { transition-delay: 0.3s; }
+.rb-source {
+  font-size: 0.6rem; letter-spacing: 2px; color: rgba(26,130,255,0.7);
+  margin-bottom: 8px; display: block;
+}
+.rb-stat {
+  font-size: 2rem; font-weight: 900; color: #60a5fa;
+  display: block; margin-bottom: 4px;
+}
+.rb-desc { font-size: 0.78rem; line-height: 1.8; color: rgba(255,255,255,0.55); }
+.rb-desc strong { color: rgba(255,255,255,0.85); }
+#chart-symptoms { width: 100%; height: 200px; }
+
+.corr-box {
+  margin-top: 14px; padding: 14px;
+  background: rgba(96,165,250,0.05);
+  border: 1px solid rgba(96,165,250,0.15);
+  border-radius: 10px;
+}
+.corr-title { font-size: 0.6rem; letter-spacing: 2px; color: rgba(96,165,250,0.6); margin-bottom: 10px; }
+.corr-item { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+.corr-item:last-child { border-bottom: none; }
+.corr-label { font-size: 0.7rem; color: rgba(255,255,255,0.45); }
+.corr-sig { font-size: 0.7rem; font-weight: 700; color: #60a5fa; }
+.corr-sig.sig-red { color: #e74c3c; }
+.corr-sig.sig-green { color: #2ecc71; }
+
+/* ===== PAGE 7 · 专家访谈视频 ===== */
+#slide-video { background: #070707; }
+.video-label {
+  font-size: 0.6rem; letter-spacing: 4px; color: var(--gold-light);
+  margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+}
+.video-label::before {
+  content: '▶'; font-size: 0.7rem; color: var(--gold-light);
+}
+.video-title {
+  font-size: 1.4rem; font-weight: 900; color: #fff;
+  margin-bottom: 20px; line-height: 1.4;
+}
+.video-wrapper {
+  width: 100%; aspect-ratio: 16/9;
+  background: #111;
+  border-radius: 12px; overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.08);
+  position: relative;
+}
+.video-wrapper video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.video-placeholder {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  background: #0d0d0d;
+  gap: 12px;
+}
+.vp-icon {
+  width: 60px; height: 60px; border-radius: 50%;
+  background: rgba(184,134,11,0.15);
+  border: 1px solid rgba(184,134,11,0.4);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; color: var(--gold-light);
+  cursor: pointer;
+  transition: background 0.3s;
+}
+.vp-icon:hover { background: rgba(184,134,11,0.25); }
+.vp-text { font-size: 0.75rem; color: rgba(255,255,255,0.3); text-align: center; }
+
+.advice-row {
+  display: flex; gap: 10px; margin-top: 18px;
+}
+.advice-chip {
+  flex: 1; background: rgba(184,134,11,0.08);
+  border: 1px solid rgba(184,134,11,0.2);
+  border-radius: 8px; padding: 10px 8px;
+  text-align: center;
+}
+.advice-chip .ac-icon { font-size: 1.3rem; display: block; margin-bottom: 4px; }
+.advice-chip .ac-text { font-size: 0.62rem; color: rgba(255,255,255,0.5); line-height: 1.6; }
+.advice-chip .ac-highlight { color: var(--gold-light); font-weight: 700; }
+
+/* ===== PAGE 8 · 20-20-20 ===== */
+#slide-rule { background: var(--ink); justify-content: center; overflow: hidden; }
+.rule-title { font-size: 1.2rem; font-weight: 900; color: #fff; margin-bottom: 18px; text-align: center; }
+
+/* 三栏解释 */
+.ttt-explain {
+  display: flex; align-items: center; justify-content: center;
+  gap: 6px; width: 100%; margin-bottom: 10px;
+}
+.ttt-col { flex: 1; text-align: center; padding: 12px 4px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 10px;
+}
+.ttt-big { font-size: 2rem; font-weight: 900; color: var(--gold-light); line-height: 1; }
+.ttt-unit { font-size: 0.6rem; color: var(--grey); margin: 3px 0 6px; letter-spacing: 1px; }
+.ttt-desc { font-size: 0.62rem; color: rgba(255,255,255,0.4); line-height: 1.5; }
+.ttt-sep { color: rgba(255,255,255,0.15); font-size: 1rem; flex-shrink: 0; }
+.ttt-note {
+  font-size: 0.72rem; color: rgba(255,255,255,0.3); text-align: center;
+  margin-bottom: 20px; letter-spacing: 0.5px;
+}
+
+/* 环形计时器 */
+.rule-timer-ring {
+  width: 155px; height: 155px;
+  border-radius: 50%; margin: 0 auto 16px;
+  position: relative; display: flex; align-items: center; justify-content: center;
+}
+.ring-svg { width: 155px; height: 155px; position: absolute; top:0; left:0; transform: rotate(-90deg); }
+.ring-bg { fill: none; stroke: rgba(255,255,255,0.05); stroke-width: 5; }
+.ring-progress {
+  fill: none; stroke: var(--gold-light); stroke-width: 5; stroke-linecap: round;
+  stroke-dasharray: 427; stroke-dashoffset: 0;
+  transition: stroke-dashoffset 0.9s linear, stroke 0.4s;
+}
+.ring-inner { text-align: center; position: relative; z-index: 1; }
+.ring-time { font-size: 2.6rem; font-weight: 900; color: #fff; display: block; font-variant-numeric: tabular-nums; }
+.ring-label { font-size: 0.65rem; color: var(--grey); letter-spacing: 2px; }
+
+.timer-scrub-wrap {
+  width: 100%; max-width: 300px;
+  margin: 0 auto 4px;
+}
+.timer-scrub {
+  width: 100%; height: 4px;
+  -webkit-appearance: none; appearance: none;
+  background: rgba(255,255,255,0.08);
+  border-radius: 2px; outline: none; cursor: pointer;
+  position: relative;
+}
+.timer-scrub::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--gold-light);
+  border: 2px solid rgba(240,192,64,0.4);
+  box-shadow: 0 0 10px rgba(240,192,64,0.5);
+  cursor: grab;
+  transition: box-shadow 0.2s;
+}
+.timer-scrub::-webkit-slider-thumb:active { cursor: grabbing; box-shadow: 0 0 18px rgba(240,192,64,0.8); }
+.timer-scrub::-moz-range-thumb {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--gold-light); border: 2px solid rgba(240,192,64,0.4); cursor: grab;
+}
+.timer-scrub-labels {
+  display: flex; justify-content: space-between;
+  font-size: 0.55rem; color: rgba(255,255,255,0.2);
+  margin-top: 5px; letter-spacing: 0.5px;
+}
+
+.rule-hint {
+  font-size: 0.78rem; color: rgba(255,255,255,0.35); text-align: center;
+  margin-bottom: 18px; min-height: 1.5em; transition: color 0.4s;
+}
+
+.timer-btn {
+  width: 100%; padding: 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(240,192,64,0.4);
+  background: rgba(240,192,64,0.08);
+  color: var(--gold-light); font-size: 0.9rem; font-weight: 700;
+  cursor: pointer; letter-spacing: 2px;
+  font-family: inherit;
+  transition: background 0.3s;
+}
+.timer-btn:hover { background: rgba(240,192,64,0.15); }
+.timer-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ===== PAGE 9 · 护眼建议 ===== */
+#slide-advice { background: var(--ink); }
+.advice-list { display: flex; flex-direction: column; gap: 10px; margin-top: 18px; }
+.advice-item {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 12px 14px; border-radius: 10px;
+  background: rgba(46,204,113,0.04);
+  border: 1px solid rgba(46,204,113,0.12);
+  opacity: 0; transform: translateX(-15px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.advice-item.visible { opacity: 1; transform: translateX(0); }
+.advice-item:nth-child(2) { transition-delay: 0.1s; }
+.advice-item:nth-child(3) { transition-delay: 0.2s; }
+.advice-item:nth-child(4) { transition-delay: 0.3s; }
+.advice-item:nth-child(5) { transition-delay: 0.4s; }
+.ai-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 2px; }
+.ai-title { font-size: 0.88rem; font-weight: 700; color: rgba(255,255,255,0.85); margin-bottom: 3px; }
+.ai-desc { font-size: 0.72rem; color: rgba(255,255,255,0.4); line-height: 1.7; }
+#slide-end {
+  background: radial-gradient(ellipse at 50% 60%, rgba(192,57,43,0.08) 0%, transparent 70%), var(--ink);
+}
+.end-line { width: 1px; height: 60px; background: linear-gradient(to bottom, transparent, rgba(192,57,43,0.5), transparent); margin: 0 auto 30px; }
+.end-quote {
+  font-size: 1.4rem; font-weight: 900; line-height: 1.6; text-align: center; color: #fff;
+  opacity: 0; transform: translateY(20px);
+  transition: opacity 1s ease, transform 1s ease;
+}
+.end-quote.visible { opacity: 1; transform: translateY(0); }
+.end-sub {
+  font-size: 0.8rem; color: rgba(255,255,255,0.3); text-align: center;
+  margin-top: 16px; line-height: 2;
+  opacity: 0; transition: opacity 1s 0.5s ease;
+}
+.end-sub.visible { opacity: 1; }
+.end-credits {
+  margin-top: 50px; text-align: center;
+  font-size: 0.65rem; color: rgba(255,255,255,0.15); line-height: 2.5; letter-spacing: 1px;
+}
+.end-data-pills {
+  display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;
+  margin-top: 30px; opacity: 0; transition: opacity 1s 0.8s ease;
+}
+.end-data-pills.visible { opacity: 1; }
+.edp {
+  font-size: 0.7rem; padding: 5px 14px; border-radius: 20px;
+  border: 1px solid rgba(192,57,43,0.3); color: var(--red-light);
+  background: rgba(192,57,43,0.05);
+}
+
+/* ===== 导航点 ===== */
+.swiper-pagination-bullet {
+  background: rgba(255,255,255,0.25) !important; opacity: 1 !important;
+  width: 5px !important; height: 5px !important;
+}
+.swiper-pagination-bullet-active {
+  background: var(--red-light) !important;
+  height: 18px !important; border-radius: 3px !important;
+}
+
+/* ===== 通用动画 ===== */
+.fade-up {
+  opacity: 0; transform: translateY(20px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.fade-up.visible { opacity: 1; transform: translateY(0); }
+.fade-up.delay-1 { transition-delay: 0.15s; }
+.fade-up.delay-2 { transition-delay: 0.3s; }
+.fade-up.delay-3 { transition-delay: 0.45s; }
+
+/* ===== 眼睛扫描线 ===== */
+.scan-line {
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(to right, transparent, rgba(192,57,43,0.4), transparent);
+  animation: scan 4s linear infinite; pointer-events: none; z-index: 0;
+}
+@keyframes scan { 0%{top:0; opacity:0.8} 50%{opacity:0.3} 100%{top:100%; opacity:0.8} }
+
+/* ===== 访谈音频播放器 ===== */
+.interview-audio {
+  margin-top: 20px;
+  border: 1px solid rgba(184,134,11,0.25);
+  border-radius: 12px;
+  padding: 14px 16px;
+  background: rgba(184,134,11,0.05);
+}
+.audio-label {
+  font-size: 0.65rem; letter-spacing: 2px;
+  color: var(--gold-light); margin-bottom: 12px;
+}
+.audio-player {
+  display: flex; align-items: center; gap: 14px;
+}
+.audio-play-btn {
+  width: 42px; height: 42px; border-radius: 50%;
+  border: 1.5px solid rgba(240,192,64,0.5);
+  background: rgba(240,192,64,0.1);
+  color: var(--gold-light); font-size: 0.9rem;
+  cursor: pointer; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.3s;
+  font-family: inherit;
+}
+.audio-play-btn:hover { background: rgba(240,192,64,0.22); }
+.audio-play-btn.playing { background: rgba(240,192,64,0.18); }
+.audio-track { flex: 1; }
+.audio-progress-bg {
+  width: 100%; height: 3px; border-radius: 2px;
+  background: rgba(255,255,255,0.08);
+  position: relative; cursor: pointer; margin-bottom: 6px;
+}
+.audio-progress-fill {
+  height: 100%; border-radius: 2px;
+  background: linear-gradient(to right, var(--gold), var(--gold-light));
+  width: 0%; transition: width 0.3s linear;
+  pointer-events: none;
+}
+.audio-times {
+  display: flex; justify-content: space-between;
+  font-size: 0.6rem; color: rgba(255,255,255,0.3);
+  letter-spacing: 0.5px;
+}
+
+/* ===== 近视模拟互动页 ===== */
+#slide-myopia-sim { background: var(--ink); justify-content: flex-start; overflow: hidden; }
+
+.sim-subtitle {
+  font-size: 0.75rem; color: rgba(255,255,255,0.4);
+  margin-bottom: 16px; width: 100%; line-height: 1.7;
+}
+
+/* 模拟视窗 */
+.sim-viewport {
+  width: 100%; max-width: 480px;
+  aspect-ratio: 4/3;
+  border-radius: 14px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: #1a1a2e;
+  flex-shrink: 0;
+}
+.sim-scene {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: flex-start;
+  padding: 16px 14px 10px;
+  position: relative; z-index: 1;
+}
+
+/* 黑板 */
+.sim-board {
+  width: 100%;
+  background: #1b4d2e;
+  border-radius: 6px;
+  border: 2px solid #2d6b42;
+  padding: 12px 14px;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.4);
+  position: relative;
+}
+.sim-board::before {
+  content: '';
+  position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%);
+  width: 40%; height: 6px;
+  background: #5c3a1e; border-radius: 3px;
+}
+.sim-board-text { color: rgba(255,255,255,0.88); }
+.sbt-title {
+  font-size: 0.72rem; font-weight: 900; letter-spacing: 2px;
+  color: #fffde7; margin-bottom: 8px; text-align: center;
+  border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 6px;
+}
+.sbt-line {
+  font-size: 0.62rem; line-height: 2; color: rgba(255,255,255,0.8);
+  letter-spacing: 0.3px;
+}
+.sbt-sub {
+  font-size: 0.58rem; color: rgba(255,255,0,0.6);
+  margin-top: 6px; text-align: right;
+}
+
+/* 桌椅 */
+.sim-desk-row {
+  display: flex; gap: 14px; margin-top: 14px;
+  width: 100%; justify-content: center;
+}
+.sim-desk {
+  width: 28%; height: 18px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 4px;
+  border-top: 2px solid rgba(255,255,255,0.12);
+}
+
+/* 模糊遮罩 */
+.sim-blur-layer {
+  position: absolute; inset: 0; z-index: 2;
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
+  transition: backdrop-filter 0.15s, -webkit-backdrop-filter 0.15s;
+  pointer-events: none;
+}
+
+/* 度数标签 */
+.sim-degree-badge {
+  position: absolute; top: 10px; right: 12px; z-index: 3;
+  font-size: 0.65rem; font-weight: 900; letter-spacing: 1px;
+  padding: 4px 10px; border-radius: 20px;
+  background: rgba(13,13,13,0.75);
+  border: 1px solid rgba(192,57,43,0.5);
+  color: var(--red-light);
+  transition: color 0.3s, border-color 0.3s;
+}
+
+/* 滑块区 */
+.sim-controls {
+  width: 100%; max-width: 480px;
+  margin-top: 14px;
+}
+.sim-scale {
+  display: flex; justify-content: space-between;
+  font-size: 0.56rem; color: rgba(255,255,255,0.25);
+  margin-bottom: 6px; letter-spacing: 0.5px;
+}
+.myopia-slider {
+  width: 100%; height: 4px;
+  -webkit-appearance: none; appearance: none;
+  background: linear-gradient(to right, #2ecc71, #f1c40f, #e67e22, #e74c3c, #8e0000);
+  border-radius: 2px; outline: none; cursor: pointer;
+}
+.myopia-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: #fff;
+  border: 3px solid var(--red-light);
+  box-shadow: 0 0 10px rgba(231,76,60,0.5);
+  cursor: grab; transition: box-shadow 0.2s;
+}
+.myopia-slider::-webkit-slider-thumb:active { cursor: grabbing; box-shadow: 0 0 18px rgba(231,76,60,0.8); }
+.myopia-slider::-moz-range-thumb {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: #fff; border: 3px solid var(--red-light); cursor: grab;
+}
+
+/* 说明文字 */
+.sim-desc-wrap {
+  width: 100%; max-width: 480px;
+  margin-top: 12px; min-height: 52px;
+}
+.sim-desc {
+  font-size: 0.78rem; color: rgba(255,255,255,0.5);
+  line-height: 1.8; transition: color 0.4s;
+}
+.sim-stat {
+  font-size: 0.68rem; color: var(--red-light);
+  margin-top: 4px; font-weight: 700; min-height: 1.2em;
+  transition: opacity 0.4s;
+}
+
+/* ===== 专家访谈问答页 ===== */
+#slide-doctor1, #slide-doctor2 { background: var(--ink); }
+
+.doctor-qa {
+  margin-bottom: 18px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(184,134,11,0.15);
+}
+.dq-question {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 11px 14px;
+  background: rgba(255,255,255,0.03);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.dq-answer {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 12px 14px;
+  background: rgba(184,134,11,0.04);
+}
+.dq-tag {
+  flex-shrink: 0;
+  font-size: 0.6rem; font-weight: 900; letter-spacing: 1px;
+  padding: 2px 7px; border-radius: 4px;
+  margin-top: 2px;
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.4);
+}
+.dq-tag.ans {
+  background: rgba(184,134,11,0.2);
+  color: var(--gold-light);
+  white-space: nowrap;
+}
+.dq-text {
+  font-size: 0.8rem; line-height: 1.85;
+  color: rgba(255,255,255,0.55);
+}
+.dq-question .dq-text { color: rgba(255,255,255,0.75); font-size: 0.78rem; }
+.dq-answer .dq-text strong { color: rgba(255,255,255,0.9); }
+
+/* 三条锦囊 */
+.doctor-tips {
+  margin-top: 20px;
+  border: 1px solid rgba(184,134,11,0.2);
+  border-radius: 12px;
+  padding: 14px 16px;
+  background: rgba(184,134,11,0.04);
+}
+.tip-title {
+  font-size: 0.65rem; letter-spacing: 3px;
+  color: var(--gold-light); margin-bottom: 14px;
+}
+.tip-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  margin-bottom: 12px;
+}
+.tip-item:last-child { margin-bottom: 0; }
+.tip-num {
+  font-size: 0.75rem; font-weight: 900;
+  color: var(--gold); flex-shrink: 0;
+  width: 22px; margin-top: 1px;
+}
+.tip-main {
+  font-size: 0.82rem; font-weight: 700;
+  color: rgba(255,255,255,0.85); margin-bottom: 2px;
+}
+.tip-sub {
+  font-size: 0.68rem; color: rgba(255,255,255,0.35); line-height: 1.6;
+}
+
+/* 医生署名 */
+.doctor-meta { margin-top: 18px; }
+.dm-divider {
+  height: 1px;
+  background: linear-gradient(to right, rgba(184,134,11,0.3), transparent);
+  margin-bottom: 10px;
+}
+.dm-info {
+  font-size: 0.6rem; letter-spacing: 1px;
+  color: rgba(255,255,255,0.2); line-height: 2;
+}
+
+/* ===== 响应式微调 ===== */
+@media (max-height: 680px) {
+  .cover-eyeball { width: 100px; height: 100px; margin-bottom: 20px; }
+  .cover-title { font-size: 2.4rem; }
+  .cover-stat-row { padding: 14px 0; margin-bottom: 30px; }
+  .case-headline { font-size: 1.4rem; }
+}
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<div class="swiper">
+  <div class="swiper-wrapper">
+
+    <!-- ===== SLIDE 0 · 封面 ===== -->
+    <div class="swiper-slide" id="slide-cover">
+      <div class="noise-overlay"></div>
+      <div class="scan-line"></div>
+      <div class="slide-inner" style="text-align:center;" id="cover-content">
+        <div class="cover-eyeball">
+          <div class="cover-pupil-dot"></div>
+        </div>
+        <div class="cover-tag">数据新闻调查报告 · 2025</div>
+        <div class="cover-title">"屏"困一代</div>
+        <div class="cover-subtitle">大学生电子屏使用的"视"界危机</div>
+        <div class="cover-stat-row fade-up delay-1">
+          <div class="cover-stat-item">
+            <span class="cover-stat-num">207</span>
+            <span class="cover-stat-label">受访大学生</span>
+          </div>
+          <div class="cover-stat-item">
+            <span class="cover-stat-num">90%</span>
+            <span class="cover-stat-label">存在近视问题</span>
+          </div>
+          <div class="cover-stat-item">
+            <span class="cover-stat-num">82%</span>
+            <span class="cover-stat-label">关灯刷手机</span>
+          </div>
+        </div>
+        <div class="scroll-hint fade-up delay-2">
+          <span>向下滑动 开始阅读</span>
+          <div class="scroll-arrow"></div>
+        </div>
+      </div>
+      <!-- 模糊遮罩层 -->
+      <div id="blur-overlay">
+        <div id="blur-text">
+          <div class="glitch-wrap">
+            <div class="glitch-text" data-text="你的视界">你的视界</div>
+          </div>
+          <div class="glitch-wrap" style="margin-top:6px;">
+            <div class="scratch s1"></div>
+            <div class="scratch s2"></div>
+            <div class="glitch-text" data-text="还清晰吗？" style="font-size:2.2rem; letter-spacing:8px;">还清晰吗？</div>
+          </div>
+        </div>
+        <button id="blur-btn" onclick="clearVision()">擦亮你的视界</button>
+      </div>
+    </div>
+
+    <!-- ===== SLIDE 1 · 案例1 · 视网膜脱离 ===== -->
+    <div class="swiper-slide case-slide" id="slide-case1">
+      <div class="slide-inner">
+        <div class="chapter-label">真实新闻案例 · 01</div>
+        <div class="case-headline fade-up" style="font-size:1.45rem; margin-bottom:12px;">
+          "拉上了<em>黑色窗帘</em>"<br>——20岁女生的极夜
+        </div>
+        <div class="case-pull-quote" style="font-size:0.88rem; line-height:1.75; margin:12px 0; padding:10px 14px;">
+          浙大一院眼科接诊了<span class="em-data">20岁</span>女大学生"丽丽"——左眼视力急剧下降，确认<strong>左眼视网膜已完全脱落失明</strong>，右眼亦出现脱落迹象。她哭着说："我才20岁，不想失明……"
+        </div>
+        <div class="case-body" style="font-size:0.82rem; line-height:1.85; margin-top:10px;">
+          盛艳主任医师诊断：<strong style="color:#e74c3c">高度近视致视网膜脱离</strong>（左眼700度，右眼500度）。左眼视网膜功能已<strong>永久丧失</strong>，无法复明；右眼经手术成功修复。<br><br>
+          崔红光教授指出，高度近视人群发生视网膜脱落概率是常人的 <span class="em-data">7～8倍</span>，而我们的调查中，已有 <span class="em-data">19.81%</span> 的大学生达到高度近视。<br><br>
+          <em style="color:rgba(255,255,255,0.4); font-style:normal;">每一次深夜盯着屏幕，眼轴就在悄悄被拉长。</em>
+          <div class="case-source">来源：浙大一院官网 · 盛艳主任医师团队病例报道 · zy91.com</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SLIDE 2 · 案例2 · 急性青光眼 ===== -->
+    <div class="swiper-slide case-slide" id="slide-case2">
+      <div class="slide-inner">
+        <div class="chapter-label">真实新闻案例 · 02</div>
+        <div class="case-headline fade-up" style="font-size:1.45rem; margin-bottom:12px;">
+          关灯后那道<em>唯一的光</em><br>正在偷走你的视野
+        </div>
+        <div class="case-pull-quote" style="font-size:0.88rem; line-height:1.75; margin:12px 0; padding:10px 14px;">
+          《青岛早报》2024年3月报道：市民大明（化名）长期关灯熬夜玩手机，某天右眼<strong>毫无征兆地肿胀并剧烈头痛</strong>，就医时眼压高得仪器已测不出数值（正常≤21mmHg），确诊<strong>急性青光眼发作</strong>，视野已出现不可逆损伤。
+        </div>
+        <div class="case-body" style="font-size:0.82rem; line-height:1.85; margin-top:10px;">
+          潘晓晶医生解释：<strong style="color:#e74c3c">黑暗中瞳孔散大，房水循环受阻，眼压急剧升高</strong>，视神经损伤不可逆——急性发作 <span class="em-data">2~3小时</span>内若不处理，视力可完全丧失。<br><br>
+          然而我们的调查显示，这类高危行为极为普遍：<br>
+          <span class="em-data">82.13%</span> 的大学生在黑暗中使用手机，<span class="em-data">71.98%</span> 从不开启护眼模式。<br>
+          卡方分析显示，关灯用屏组眼干涩率（32.4%）显著高于非关灯组（21.6%）。<br><br>
+          <em style="color:rgba(255,255,255,0.4); font-style:normal;">那束黑暗中唯一的强光，是凶器，不是陪伴。</em>
+          <div class="case-source">来源：《青岛早报》2024-03-16 A07版 · 爱尔眼科青光眼急重症专家共识</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SLIDE 3 · 案例3 · 计算机视觉综合征 ===== -->
+    <div class="swiper-slide case-slide" id="slide-case3">
+      <div class="slide-inner">
+        <div class="chapter-label">真实新闻案例 · 03</div>
+        <div class="case-headline fade-up" style="font-size:1.45rem; margin-bottom:12px;">
+          你的眼泪<em>不够用了</em>
+        </div>
+        <div class="case-pull-quote" style="font-size:0.88rem; line-height:1.75; margin:12px 0; padding:10px 14px;">
+          《生命时报》报道：复旦大学附属眼耳鼻喉科医院洪佳旭主任医师透露，其门诊干眼患者占比达<span class="em-data">30%~40%</span>，群体明显年轻化。他分享了一个令人震惊的病例：<strong>一名大学生因干眼症严重到无法正常睁眼，被迫休学，并因此诱发抑郁。</strong>
+        </div>
+        <div class="case-body" style="font-size:0.82rem; line-height:1.85; margin-top:10px;">
+          温州医大蒋自培主任指出：干眼已从"老年病"演变为覆盖全年龄段的"时代病"，多数年轻人将症状误认为"眼疲劳"而拖延就医。<br><br>
+          本次调查数据印证了这一趋势：高度近视者经常使用人工泪液的比例高达 <span class="em-data">63.4%</span>，是无近视组的 <span class="em-data">6.3倍</span>（χ²=33.9，p&lt;0.001）。<br><br>
+          <em style="color:rgba(255,255,255,0.4); font-style:normal;">你以为只是眼睛累了，其实是泪腺在求饶。</em>
+          <div class="case-source">来源：《生命时报》· 复旦大学附属眼耳鼻喉科医院洪佳旭主任医师 · 温州医科大学新闻中心</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SLIDE 4 · 近视模拟体验 ===== -->
+    <div class="swiper-slide" id="slide-myopia-sim">
+      <div class="slide-inner" style="display:flex;flex-direction:column;align-items:center;">
+
+        <div class="chapter-label" style="color:var(--red-light); width:100%;">互动体验</div>
+        <div class="case-headline fade-up" style="font-size:1.35rem; margin-bottom:6px; width:100%;">
+          拖动滑块<br><em>感受他们眼中的世界</em>
+        </div>
+        <div class="sim-subtitle fade-up delay-1">我们调查中 <strong style="color:var(--red-light)">90.34%</strong> 的同学正在经历不同程度的近视</div>
+
+        <!-- 模拟视窗 -->
+        <div class="sim-viewport fade-up delay-1" id="simViewport">
+          <div class="sim-scene" id="simScene">
+            <!-- 模拟教室黑板场景 -->
+            <div class="sim-board">
+              <div class="sim-board-text" id="simBoardText">
+                <div class="sbt-title">今日课程安排</div>
+                <div class="sbt-line">08:00 — 高等数学（B栋301）</div>
+                <div class="sbt-line">10:00 — 英语精读（C栋205）</div>
+                <div class="sbt-line">14:00 — 数据新闻实务（媒体楼412）</div>
+                <div class="sbt-sub">作业截止：本周五 23:59</div>
+              </div>
+            </div>
+            <!-- 教室座位暗示 -->
+            <div class="sim-desk-row">
+              <div class="sim-desk"></div>
+              <div class="sim-desk"></div>
+              <div class="sim-desk"></div>
+            </div>
+          </div>
+          <!-- 模糊遮罩层 -->
+          <div class="sim-blur-layer" id="simBlurLayer"></div>
+          <!-- 度数标签 -->
+          <div class="sim-degree-badge" id="simDegreeBadge">正常视力</div>
+        </div>
+
+        <!-- 滑块控制区 -->
+        <div class="sim-controls fade-up delay-2">
+          <div class="sim-scale">
+            <span>正常</span>
+            <span>100°</span>
+            <span>300°</span>
+            <span>600°</span>
+            <span>800°+</span>
+          </div>
+          <input type="range" id="myopiaSlider" class="myopia-slider"
+            min="0" max="100" value="0"
+            oninput="updateMyopiaSim(this.value)">
+        </div>
+
+        <!-- 动态说明文字 -->
+        <div class="sim-desc-wrap">
+          <div class="sim-desc" id="simDesc">
+            👁 拖动上方滑块，体验不同近视度数的视野
+          </div>
+          <div class="sim-stat" id="simStat"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ===== SLIDE 5 · 访谈案例1 · 缺乏户外活动 ===== -->
+    <div class="swiper-slide case-slide" id="slide-interview1">
+      <div class="slide-inner">
+        <div class="chapter-label">访谈案例 · 01</div>
+        <div class="case-headline fade-up" style="font-size:1.45rem; margin-bottom:12px;">
+          困在室内的眼睛<br>——<em>户外，是最廉价的护眼药</em>
+        </div>
+        <div class="case-pull-quote" style="font-size:0.88rem; line-height:1.75; margin:12px 0; padding:10px 14px;">
+          该同学长期处于室内，日均户外活动极少，<strong>眼部肌肉持续紧张</strong>，无法有效放松。尽管知晓户外望远的保护作用，仍因生活习惯难以改变。
+        </div>
+        <div class="case-body" style="font-size:0.82rem; line-height:1.85; margin-top:10px;">
+          最终，近视在大学期间<strong style="color:#e74c3c">快速加深</strong>，夜间与远距视力均明显下降。调查（N=207）显示：<br><br>
+          <span class="case-data-chip"><span class="em-data">22.22%</span> 每天户外不足1小时</span><br>
+          仅 <span class="em-data">14.49%</span> 能坚持每天3小时以上户外活动<br>
+          已有 <span class="em-data">42.52%</span> 在大学期间换过更高度数的眼镜<br><br>
+          <em style="color:rgba(255,255,255,0.4); font-style:normal; font-size:0.8rem;">阳光与远眺，是大自然为眼睛准备的免费处方。</em>
+        </div>
+        <!-- 音频播放器 -->
+        <div class="interview-audio fade-up delay-3">
+          <div class="audio-label">🎙 收听原声访谈</div>
+          <audio id="audio1" src="one.mp3" preload="metadata"></audio>
+          <div class="audio-player" id="player1">
+            <button class="audio-play-btn" onclick="toggleAudio('audio1','player1')">
+              <span class="play-icon">▶</span>
+            </button>
+            <div class="audio-track">
+              <div class="audio-progress-bg">
+                <div class="audio-progress-fill" id="fill1"></div>
+              </div>
+              <div class="audio-times">
+                <span class="audio-cur" id="cur1">0:00</span>
+                <span class="audio-dur" id="dur1">--:--</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="case-source">来源：本研究一对一深度访谈 · 广州华商学院 · 2025</div>
+      </div>
+    </div>
+
+    <!-- ===== SLIDE 5 · 访谈案例2 · 夜间用屏习惯 ===== -->
+    <div class="swiper-slide case-slide" id="slide-interview2">
+      <div class="slide-inner">
+        <div class="chapter-label">访谈案例 · 02</div>
+        <div class="case-headline fade-up" style="font-size:1.45rem; margin-bottom:12px;">
+          熄灯之后的<em>刷屏仪式</em><br>——明知故犯的代价
+        </div>
+        <div class="case-pull-quote" style="font-size:0.88rem; line-height:1.75; margin:12px 0; padding:10px 14px;">
+          该同学长期<strong>熄灯后卧床玩手机</strong>，在黑暗环境与不良姿势双重影响下，频繁出现<strong>刺痛、怕光、视物模糊</strong>等不适。
+        </div>
+        <div class="case-body" style="font-size:0.82rem; line-height:1.85; margin-top:10px;">
+          尽管明知危害，却因<strong style="color:#e74c3c">放松需求与从众心理</strong>难以自控——这正是大学生护眼认知与实际行为严重脱节的缩影。<br><br>
+          调查数据揭示这一习惯的普遍程度：<br>
+          <span class="em-data">82.13%</span> 在夜间黑暗中使用手机；<span class="em-data">71.98%</span> 从不开启护眼模式；<span class="em-data">52.17%</span> 在昏暗光线下用屏。<br><br>
+          频繁眼干涩（每周3次+）比例达 <span class="em-data">14.98%</span>，频繁眼酸胀比例为 <span class="em-data">10.63%</span>。<br><br>
+          <em style="color:rgba(255,255,255,0.4); font-style:normal; font-size:0.8rem;">放松的代价，不该由眼睛来承担。</em>
+        </div>
+        <!-- 音频播放器 -->
+        <div class="interview-audio fade-up delay-3">
+          <div class="audio-label">🎙 收听原声访谈</div>
+          <audio id="audio2" src="two.mp3" preload="metadata"></audio>
+          <div class="audio-player" id="player2">
+            <button class="audio-play-btn" onclick="toggleAudio('audio2','player2')">
+              <span class="play-icon">▶</span>
+            </button>
+            <div class="audio-track">
+              <div class="audio-progress-bg">
+                <div class="audio-progress-fill" id="fill2"></div>
+              </div>
+              <div class="audio-times">
+                <span class="audio-cur" id="cur2">0:00</span>
+                <span class="audio-dur" id="dur2">--:--</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="case-source">来源：本研究一对一深度访谈 · 广州华商学院 · 2025</div>
+      </div>
+    </div>
+
+    <!-- ===== SLIDE 6 · 数据 · 近视分布 ===== -->
+    <div class="swiper-slide" id="slide-data1">
+      <div class="slide-inner">
+        <div class="data-title fade-up">207人的近视真相</div>
+        <div class="data-subtitle fade-up delay-1">广州华商学院 · 2025年调查问卷</div>
+        <div id="chart-myopia"></div>
+        <div class="data-note fade-up delay-2">
+          仅 <b>9.66%</b>（20人）保持无近视 · <b>19.81%</b>（41人）已达高度近视（＞600度）<br>
+          高度近视人群面临视网膜脱离、黄斑病变、青光眼等不可逆风险
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SLIDE 5 · 数据 · 用屏习惯 ===== -->
+    <div class="swiper-slide" id="slide-data2">
+      <div class="slide-inner">
+        <div class="data-title fade-up">我们是怎么用坏眼睛的</div>
+        <div class="data-subtitle fade-up delay-1">不良用屏习惯分布</div>
+        <div id="chart-habits"></div>
+        <div class="habit-grid">
+          <div class="habit-card danger fade-up delay-1">
+            <span class="hc-num">84.54%</span>
+            <span class="hc-label">手机距离≤30cm</span>
+          </div>
+          <div class="habit-card danger fade-up delay-1">
+            <span class="hc-num">82.13%</span>
+            <span class="hc-label">黑暗中用手机</span>
+          </div>
+          <div class="habit-card warn fade-up delay-2">
+            <span class="hc-num">71.98%</span>
+            <span class="hc-label">从不开护眼模式</span>
+          </div>
+          <div class="habit-card danger fade-up delay-2">
+            <span class="hc-num">42.52%</span>
+            <span class="hc-label">入学后换过更高度数眼镜</span>
+          </div>
+          <div class="habit-card warn fade-up delay-3">
+            <span class="hc-num">22.22%</span>
+            <span class="hc-label">每天户外不足1小时</span>
+          </div>
+          <div class="habit-card ok fade-up delay-3">
+            <span class="hc-num">9.66%</span>
+            <span class="hc-label">坚持定时休息眼睛</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SLIDE 6 · 学术文献数据 ===== -->
+    <div class="swiper-slide" id="slide-research">
+      <div class="slide-inner">
+        <div class="chapter-label" style="color:#60a5fa; margin-bottom:16px;">学术研究背书</div>
+        <div class="research-block">
+          <span class="rb-source">孙莹莹等 · 国际眼科杂志 2025</span>
+          <span class="rb-stat">↑ 干眼风险</span>
+          <div class="rb-desc">视频显示终端蓝光对泪膜稳定性造成<strong>显著破坏</strong>，蓝光暴露时长与干眼症状呈正相关，且具有累积效应。</div>
+        </div>
+        <div class="research-block">
+          <span class="rb-source">王正静 · 贵州医科大学 2025</span>
+          <span class="rb-stat">调节异常 → 近视加深</span>
+          <div class="rb-desc">在校大学生<strong>双眼调节功能异常</strong>与近视度数加深存在强相关，视疲劳是近视进展的重要预警信号。</div>
+        </div>
+        <div class="research-block">
+          <span class="rb-source">李炳钦等 · 中国学校卫生 2023</span>
+          <span class="rb-stat">CVS 流行率高</span>
+          <div class="rb-desc">天津某高校新生调查显示，<strong>计算机视觉综合征（CVS）</strong>检出率显著，用屏时长、姿势是核心影响因素。</div>
+        </div>
+        <div class="research-block">
+          <span class="rb-source">侯苏格等 · 预防医学论坛 2024</span>
+          <span class="rb-stat">视疲劳普遍存在</span>
+          <div class="rb-desc">大学生视疲劳主观症状调查显示，<strong>用屏时长每增加1小时</strong>，视疲劳症状得分显著上升，休息行为是关键保护因素。</div>
+        </div>
+        <div id="chart-symptoms"></div>
+        <div class="data-note" style="margin-top:10px;">
+          数据来源：本研究207人问卷 · 眼部不适症状频率统计
+        </div>
+        <div class="corr-box fade-up delay-3">
+          <div class="corr-title">本研究卡方相关性分析（N=207）</div>
+          <div class="corr-item">
+            <span class="corr-label">近视程度 × 人工泪液依赖</span>
+            <span class="corr-sig">χ²=33.9, p&lt;0.001 ★★★</span>
+          </div>
+          <div class="corr-item">
+            <span class="corr-label">高度近视经常用人工泪液</span>
+            <span class="corr-sig sig-red">63.4%（无近视仅10%）</span>
+          </div>
+          <div class="corr-item">
+            <span class="corr-label">户外&gt;3h组高度近视率</span>
+            <span class="corr-sig sig-green">仅3.3%</span>
+          </div>
+          <div class="corr-item">
+            <span class="corr-label">户外&lt;1h组高度近视率</span>
+            <span class="corr-sig sig-red">28.3%（差异8.6倍）</span>
+          </div>
+          <div class="corr-item">
+            <span class="corr-label">换镜者中无休息习惯占比</span>
+            <span class="corr-sig sig-red">68.2%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SLIDE 7 · 专家访谈视频 ===== -->
+    <div class="swiper-slide" id="slide-video">
+      <div class="slide-inner">
+        <div class="video-label">护眼科普</div>
+        <div class="video-title fade-up">科学护眼<br>从现在开始</div>
+        <div class="video-wrapper">
+          <video id="expert-video" controls preload="metadata"
+            style="width:100%;height:100%;object-fit:cover;display:block;">
+            <source src="20-20-20.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="advice-row fade-up delay-1">
+          <div class="advice-chip">
+            <span class="ac-icon">⏱</span>
+            <div class="ac-text"><span class="ac-highlight">20分钟</span><br>看屏幕后</div>
+          </div>
+          <div class="advice-chip">
+            <span class="ac-icon">👁</span>
+            <div class="ac-text">望向<span class="ac-highlight">20英尺</span><br>（约6米）外</div>
+          </div>
+          <div class="advice-chip">
+            <span class="ac-icon">🕐</span>
+            <div class="ac-text">坚持<span class="ac-highlight">20秒</span><br>让眼肌放松</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SLIDE 8 · 20-20-20 互动计时器 ===== -->
+    <div class="swiper-slide" id="slide-rule">
+      <div class="slide-inner" style="text-align:center;">
+
+        <div class="rule-title fade-up">「20-20-20」护眼法则</div>
+
+        <!-- 法则解释三栏 -->
+        <div class="ttt-explain fade-up delay-1">
+          <div class="ttt-col">
+            <div class="ttt-big">20</div>
+            <div class="ttt-unit">分钟</div>
+            <div class="ttt-desc">近距离用眼后</div>
+          </div>
+          <div class="ttt-sep">→</div>
+          <div class="ttt-col">
+            <div class="ttt-big">20</div>
+            <div class="ttt-unit">英尺</div>
+            <div class="ttt-desc">望向约6米外</div>
+          </div>
+          <div class="ttt-sep">×</div>
+          <div class="ttt-col">
+            <div class="ttt-big">20</div>
+            <div class="ttt-unit">秒</div>
+            <div class="ttt-desc">持续注视远处</div>
+          </div>
+        </div>
+
+        <div class="ttt-note fade-up delay-2">
+          缓解视疲劳、预防近视加深的科学护眼方法
+        </div>
+
+        <!-- 环形计时器 -->
+        <div class="rule-timer-ring fade-up delay-2">
+          <svg class="ring-svg" viewBox="0 0 160 160">
+            <circle class="ring-bg" cx="80" cy="80" r="68"/>
+            <circle class="ring-progress" id="ring-progress" cx="80" cy="80" r="68"/>
+          </svg>
+          <div class="ring-inner">
+            <span class="ring-time" id="ring-time">20</span>
+            <span class="ring-label" id="ring-label">秒</span>
+          </div>
+        </div>
+
+        <!-- 可拖动进度条 -->
+        <div class="timer-scrub-wrap fade-up delay-2">
+          <input type="range" id="timer-scrub" class="timer-scrub"
+            min="0" max="20" value="20" step="1"
+            oninput="scrubTimer(this.value)">
+          <div class="timer-scrub-labels">
+            <span>20s</span><span>15s</span><span>10s</span><span>5s</span><span>0s</span>
+          </div>
+        </div>
+
+        <div class="rule-hint fade-up delay-3" id="rule-hint">
+          点击下方按钮，开始20秒望远计时
+        </div>
+
+        <button class="timer-btn fade-up delay-3" id="timer-btn" onclick="startTimer()">
+          ▶ 开始 · 望远20秒
+        </button>
+
+      </div>
+    </div>
+
+    <!-- ===== SLIDE 9 · 护眼行动建议 ===== -->
+    <div class="swiper-slide" id="slide-advice">
+      <div class="slide-inner">
+        <div class="chapter-label" style="color:#2ecc71;">建设性建议</div>
+        <div class="case-headline fade-up" style="font-size:1.4rem;">
+          知道了危机<br>我们能<em style="color:#2ecc71;">做什么</em>？
+        </div>
+        <div class="advice-list">
+          <div class="advice-item fade-up delay-1">
+            <div class="ai-icon">👁</div>
+            <div class="ai-content">
+              <div class="ai-title">践行20-20-20法则</div>
+              <div class="ai-desc">每近距离用眼20分钟，望向6米外20秒，让眼肌主动放松</div>
+            </div>
+          </div>
+          <div class="advice-item fade-up delay-1">
+            <div class="ai-icon">🌿</div>
+            <div class="ai-content">
+              <div class="ai-title">增加户外活动时间</div>
+              <div class="ai-desc">每天至少1-2小时户外活动，自然光照是预防近视加深的天然屏障</div>
+            </div>
+          </div>
+          <div class="advice-item fade-up delay-2">
+            <div class="ai-icon">💡</div>
+            <div class="ai-content">
+              <div class="ai-title">改善用屏环境</div>
+              <div class="ai-desc">保持环境光充足、屏距50cm以上，彻底告别关灯刷手机</div>
+            </div>
+          </div>
+          <div class="advice-item fade-up delay-2">
+            <div class="ai-icon">🛡</div>
+            <div class="ai-content">
+              <div class="ai-title">开启护眼模式</div>
+              <div class="ai-desc">长期开启蓝光过滤，减少蓝光对泪膜的持续性损伤</div>
+            </div>
+          </div>
+          <div class="advice-item fade-up delay-3">
+            <div class="ai-icon">🏥</div>
+            <div class="ai-content">
+              <div class="ai-title">定期检查视力</div>
+              <div class="ai-desc">每学期至少检查一次，高度近视者每年进行眼底检查</div>
+            </div>
+          </div>
+        </div>
+        <div class="data-note fade-up delay-3" style="margin-top:14px; text-align:center;">
+          调查显示仅 <b style="color:#2ecc71;">9.66%</b> 的同学坚持定时休息——<br>改变，从现在开始
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SLIDE 10 · 专家访谈 · 刘医生 上 ===== -->
+    <div class="swiper-slide" id="slide-doctor1">
+      <div class="slide-inner">
+        <div class="chapter-label" style="color:var(--gold-light);">专家访谈 · 中山市第六人民医院眼科</div>
+        <div class="case-headline fade-up" style="font-size:1.35rem; margin-bottom:18px;">
+          那些被忽视的<em>生理细节</em><br>与护眼产品的<em>真实效用</em>
+        </div>
+
+        <!-- Q1 -->
+        <div class="doctor-qa fade-up delay-1">
+          <div class="dq-question">
+            <span class="dq-tag">Q</span>
+            <span class="dq-text">临床中有哪些容易被大学生忽视、却对视力有潜移默化影响的"生理细节"？</span>
+          </div>
+          <div class="dq-answer">
+            <span class="dq-tag ans">刘医生</span>
+            <div class="dq-text">
+              长时间专注盯着屏幕时，眨眼频率会<strong>下意识大幅降低</strong>，导致保护眼球的泪膜迅速破裂，从而产生干涩感。建议养成"<strong>有意识眨眼</strong>"的习惯。同时，可将屏幕中心调至略低于平视线的位置，利用眼睑自然下垂来减少眼球暴露面积——这种物理上的小调整，能有效缓解泪水蒸发。
+            </div>
+          </div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="doctor-qa fade-up delay-2">
+          <div class="dq-question">
+            <span class="dq-tag">Q</span>
+            <span class="dq-text">很多大学生依赖防蓝光眼镜或人工泪液，觉得有了这些就可以放心熬夜用屏，这种"代偿性"护眼行为有效吗？</span>
+          </div>
+          <div class="dq-answer">
+            <span class="dq-tag ans">刘医生</span>
+            <div class="dq-text">
+              千万不要把防蓝光眼镜当成<strong>可以无限用屏的"免死金牌"</strong>。对于经常感到眼睛酸胀、有异物感的人，与其依赖滴眼液，不如在每晚睡前进行一次<strong>温水热敷</strong>——这能有效疏通睑板腺，提升眼部自身的润滑质量，这种生理性的养护远比化学试剂的补救更有效。
+            </div>
+          </div>
+        </div>
+
+        <div class="doctor-meta fade-up delay-3">
+          <div class="dm-divider"></div>
+          <div class="dm-info">受访专家：刘医生 · 中山市第六人民医院眼科 · 2025年访谈</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SLIDE 11 · 专家访谈 · 刘医生 下 ===== -->
+    <div class="swiper-slide" id="slide-doctor2">
+      <div class="slide-inner">
+        <div class="chapter-label" style="color:var(--gold-light);">专家访谈 · 中山市第六人民医院眼科</div>
+        <div class="case-headline fade-up" style="font-size:1.35rem; margin-bottom:18px;">
+          从内部构建<em>视力防御</em>
+        </div>
+
+        <!-- Q3 -->
+        <div class="doctor-qa fade-up delay-1">
+          <div class="dq-question">
+            <span class="dq-tag">Q</span>
+            <span class="dq-text">除了被动避开屏幕伤害，有没有更主动的手段，帮我们在身体内部建立对抗视力损伤的长效防御屏障？</span>
+          </div>
+          <div class="dq-answer">
+            <span class="dq-tag ans">刘医生</span>
+            <div class="dq-text">
+              从内部建立营养防御确实至关重要。建议在日常饮食中多摄入富含<strong>叶黄素的深绿色蔬菜</strong>，这能为视网膜构建起天然的"光过滤网"，从细胞层面过滤高能光线的损伤。通过这种内在营养干预与外部用眼习惯改善相结合，我们才能更主动、更系统地应对视力持续下降的危机。
+            </div>
+          </div>
+        </div>
+
+        <!-- 三条行动锦囊 -->
+        <div class="doctor-tips fade-up delay-2">
+          <div class="tip-title">刘医生给大学生的三条锦囊</div>
+          <div class="tip-item">
+            <span class="tip-num">01</span>
+            <div class="tip-content">
+              <div class="tip-main">有意识眨眼 + 调低屏幕位置</div>
+              <div class="tip-sub">减少泪膜蒸发，缓解干眼根源</div>
+            </div>
+          </div>
+          <div class="tip-item">
+            <span class="tip-num">02</span>
+            <div class="tip-content">
+              <div class="tip-main">每晚睡前温水热敷眼部</div>
+              <div class="tip-sub">疏通睑板腺，比人工泪液更持久有效</div>
+            </div>
+          </div>
+          <div class="tip-item">
+            <span class="tip-num">03</span>
+            <div class="tip-content">
+              <div class="tip-main">日常补充叶黄素（深绿色蔬菜）</div>
+              <div class="tip-sub">从细胞层面构建视网膜"光过滤网"</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="doctor-meta fade-up delay-3">
+          <div class="dm-divider"></div>
+          <div class="dm-info">受访专家：刘医生 · 中山市第六人民医院眼科 · 2025年访谈</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SLIDE 12 · 结语 ===== -->
+    <div class="swiper-slide" id="slide-end">
+      <div class="slide-inner" style="text-align:center;">
+        <div class="end-line"></div>
+        <div class="end-quote" id="end-quote">
+          你眼里应该有的<br>是星辰大海<br>
+          <span style="color:var(--red-light)">而不是600度的模糊</span>
+        </div>
+        <div class="end-sub" id="end-sub">
+          这份报告背后，是207位同学的真实回答<br>
+          也是90%以上大学生共同面对的视界危机
+        </div>
+        <div class="end-data-pills" id="end-pills">
+          <span class="edp">90.34% 有近视</span>
+          <span class="edp">82.13% 关灯用手机</span>
+          <span class="edp">71.98% 不开护眼模式</span>
+          <span class="edp">42.52% 入学后度数加深</span>
+          <span class="edp">38.16% 依赖人工泪液</span>
+          <span class="edp">只有9.66% 定时休息</span>
+        </div>
+        <div class="end-credits">
+          钱荣国 · 广州华商学院数字传播学院<br>
+          网络与新媒体 22本5班 · 毕业设计作品<br>
+          指导教师：叔翼健
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="swiper-pagination" style="right:12px; left:auto; width:auto;"></div>
+</div>
+
+<script>
+// ===== Swiper 初始化 =====
+const swiper = new Swiper('.swiper', {
+  direction: 'vertical',
+  mousewheel: { sensitivity: 1 },
+  touchReleaseOnEdges: true,
+  pagination: { el: '.swiper-pagination', clickable: true, direction: 'vertical' },
+  speed: 600,
+  on: {
+    slideChangeTransitionStart: function() {
+      // 滑动时暂停所有音频
+      ['audio1','audio2'].forEach(id => {
+        const a = document.getElementById(id);
+        if (a && !a.paused) {
+          a.pause();
+          const n = id.replace('audio','');
+          const player = document.getElementById('player' + n);
+          if (player) {
+            player.querySelector('.play-icon').textContent = '▶';
+            player.querySelector('.audio-play-btn').classList.remove('playing');
+          }
+        }
+      });
+      // 滑动时暂停视频
+      const vid = document.getElementById('expert-video');
+      if (vid && !vid.paused) vid.pause();
+      // 滑动时暂停倒计时
+      if (timerRunning) {
+        clearInterval(timerInterval);
+        timerRunning = false;
+        const btn = document.getElementById('timer-btn');
+        if (btn) { btn.disabled = false; btn.textContent = '▶ 继续 · 望远计时'; }
+      }
+    },
+    slideChangeTransitionEnd: function() {
+      updateProgress(this.activeIndex, this.slides.length);
+      triggerSlideAnimations(this.activeIndex);
+    },
+    init: function() {
+      updateProgress(0, this.slides.length);
+      triggerSlideAnimations(0);
+    }
+  }
+});
+
+function updateProgress(index, total) {
+  const pct = ((index + 1) / total) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+}
+
+// ===== 触发各页动画 =====
+const chartsRendered = {};
+
+function triggerSlideAnimations(index) {
+  const slide = document.querySelectorAll('.swiper-slide')[index];
+
+  // 通用 fade-up
+  slide.querySelectorAll('.fade-up').forEach(el => el.classList.add('visible'));
+
+  // case 页：pull-quote & body 动画
+  const pq = slide.querySelector('.case-pull-quote');
+  const cb = slide.querySelector('.case-body');
+  if (pq) setTimeout(() => pq.classList.add('visible'), 200);
+  if (cb) setTimeout(() => cb.classList.add('visible'), 400);
+
+  // 研究页：research-block
+  slide.querySelectorAll('.research-block').forEach((el, i) => {
+    setTimeout(() => el.classList.add('visible'), i * 150);
+  });
+
+  // habit cards
+  slide.querySelectorAll('.habit-card').forEach((el, i) => {
+    setTimeout(() => el.classList.add('visible'), i * 100);
+  });
+
+  // 图表（近视模拟页插入后再+1，共+3）
+  if (index === 7 && !chartsRendered[7]) { chartsRendered[7] = true; renderMyopiaChart(); }
+  if (index === 8 && !chartsRendered[8]) { chartsRendered[8] = true; renderHabitsChart(); }
+  if (index === 9 && !chartsRendered[9]) { chartsRendered[9] = true; renderSymptomsChart(); }
+
+  // 护眼建议页（slide 10）
+  if (index === 10) {
+    slide.querySelectorAll('.advice-item').forEach((el, i) => {
+      setTimeout(() => el.classList.add('visible'), i * 120);
+    });
+  }
+
+  // 结语页（slide 13）
+  if (index === 13) {
+    setTimeout(() => document.getElementById('end-quote').classList.add('visible'), 200);
+    setTimeout(() => document.getElementById('end-sub').classList.add('visible'), 600);
+    setTimeout(() => document.getElementById('end-pills').classList.add('visible'), 900);
+  }
+}
+
+// ===== ECharts · 近视分布环形图 =====
+function renderMyopiaChart() {
+  const chart = echarts.init(document.getElementById('chart-myopia'));
+  chart.setOption({
+    backgroundColor: 'transparent',
+    tooltip: { trigger: 'item', formatter: '{b}: {c}人 ({d}%)' },
+    legend: { bottom: 0, textStyle: { color: 'rgba(255,255,255,0.5)', fontSize: 11 }, itemWidth: 10, itemHeight: 10 },
+    series: [{
+      type: 'pie',
+      radius: ['48%', '68%'],
+      center: ['50%', '44%'],
+      avoidLabelOverlap: true,
+      itemStyle: { borderRadius: 6, borderColor: '#0d0d0d', borderWidth: 3 },
+      label: { show: true, position: 'outside', color: 'rgba(255,255,255,0.6)', fontSize: 11,
+        formatter: '{d}%' },
+      labelLine: { lineStyle: { color: 'rgba(255,255,255,0.15)' } },
+      data: [
+        { value: 20, name: '无近视', itemStyle: { color: '#2ecc71' } },
+        { value: 79, name: '轻度(<300°)', itemStyle: { color: '#f1c40f' } },
+        { value: 67, name: '中度(300-600°)', itemStyle: { color: '#e67e22' } },
+        { value: 41, name: '高度(>600°)', itemStyle: { color: '#e74c3c' } }
+      ],
+      animationType: 'expansion',
+      animationDuration: 1200
+    }]
+  });
+}
+
+// ===== ECharts · 不良用屏习惯雷达图 =====
+function renderHabitsChart() {
+  const chart = echarts.init(document.getElementById('chart-habits'));
+  chart.setOption({
+    backgroundColor: 'transparent',
+    radar: {
+      indicator: [
+        { name: '关灯用手机', max: 100 },
+        { name: '不开护眼模式', max: 100 },
+        { name: '距离过近', max: 100 },
+        { name: '不定时休息', max: 100 },
+        { name: '依赖人工泪液', max: 100 }
+      ],
+      nameGap: 8,
+      splitNumber: 3,
+      axisName: { color: 'rgba(255,255,255,0.45)', fontSize: 10 },
+      splitLine: { lineStyle: { color: 'rgba(255,255,255,0.06)' } },
+      splitArea: { areaStyle: { color: ['rgba(255,255,255,0.01)', 'rgba(255,255,255,0.02)'] } },
+      axisLine: { lineStyle: { color: 'rgba(255,255,255,0.08)' } }
+    },
+    series: [{
+      type: 'radar',
+      data: [{
+        value: [82.13, 71.98, 84.54, 90.34, 38.16],
+        name: '不良习惯占比(%)',
+        symbol: 'circle', symbolSize: 5,
+        lineStyle: { color: '#e74c3c', width: 2 },
+        areaStyle: { color: 'rgba(231,76,60,0.12)' },
+        itemStyle: { color: '#e74c3c' }
+      }]
+    }]
+  });
+}
+
+// ===== ECharts · 症状柱状图 =====
+function renderSymptomsChart() {
+  const chart = echarts.init(document.getElementById('chart-symptoms'));
+  chart.setOption({
+    backgroundColor: 'transparent',
+    grid: { top: 20, bottom: 40, left: 10, right: 10, containLabel: true },
+    xAxis: {
+      type: 'category',
+      data: ['眼睛干涩\n(频繁)', '眼睛酸胀\n(频繁)', '近一年\n就医', '依赖\n人工泪液', '换高度数\n眼镜'],
+      axisLabel: { color: 'rgba(255,255,255,0.4)', fontSize: 9.5 },
+      axisLine: { lineStyle: { color: 'rgba(255,255,255,0.08)' } }
+    },
+    yAxis: {
+      type: 'value',
+      axisLabel: { color: 'rgba(255,255,255,0.3)', fontSize: 9, formatter: '{value}%' },
+      splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)' } }
+    },
+    series: [{
+      type: 'bar',
+      barWidth: '55%',
+      data: [
+        { value: 14.98, itemStyle: { color: { type:'linear', x:0,y:0,x2:0,y2:1, colorStops:[{offset:0,color:'#e74c3c'},{offset:1,color:'rgba(231,76,60,0.3)'}] } } },
+        { value: 10.63, itemStyle: { color: { type:'linear', x:0,y:0,x2:0,y2:1, colorStops:[{offset:0,color:'#e67e22'},{offset:1,color:'rgba(230,126,34,0.3)'}] } } },
+        { value: 45.41, itemStyle: { color: { type:'linear', x:0,y:0,x2:0,y2:1, colorStops:[{offset:0,color:'#60a5fa'},{offset:1,color:'rgba(96,165,250,0.3)'}] } } },
+        { value: 38.16, itemStyle: { color: { type:'linear', x:0,y:0,x2:0,y2:1, colorStops:[{offset:0,color:'#a78bfa'},{offset:1,color:'rgba(167,139,250,0.3)'}] } } },
+        { value: 43.00, itemStyle: { color: { type:'linear', x:0,y:0,x2:0,y2:1, colorStops:[{offset:0,color:'#f59e0b'},{offset:1,color:'rgba(245,158,11,0.3)'}] } } }
+      ],
+      label: { show: true, position: 'top', color: 'rgba(255,255,255,0.5)', fontSize: 9.5, formatter: '{c}%' },
+      itemStyle: { borderRadius: [4,4,0,0] }
+    }]
+  });
+}
+
+// ===== 视频播放 =====
+function playVideo() {
+  const vid = document.getElementById('expert-video');
+  const placeholder = document.getElementById('video-placeholder');
+  vid.src = 'interview.mp4';
+  vid.load();
+  vid.play().then(() => {
+    placeholder.style.display = 'none';
+  }).catch(() => {
+    // 视频文件不存在时保持占位显示
+  });
+}
+
+// ===== 20-20-20 · 20秒倒计时 + 提示音 =====
+let timerRunning = false;
+let timerInterval = null;
+const TOTAL = 20;
+const C = 2 * Math.PI * 68; // circumference ≈ 427
+
+function updateTimerUI(remaining) {
+  const timeEl = document.getElementById('ring-time');
+  const progress = document.getElementById('ring-progress');
+  const scrub = document.getElementById('timer-scrub');
+
+  timeEl.textContent = remaining > 0 ? remaining : '✓';
+  const pct = remaining / TOTAL;
+  progress.style.strokeDasharray = C;
+  progress.style.strokeDashoffset = C * (1 - pct);
+  progress.style.stroke = remaining <= 5 && remaining > 0 ? '#e74c3c' : (remaining <= 0 ? '#2ecc71' : 'var(--gold-light)');
+  if (scrub) scrub.value = remaining;
+}
+
+function scrubTimer(val) {
+  // 拖动进度条时：暂停计时，更新显示
+  if (timerRunning) {
+    clearInterval(timerInterval);
+    timerRunning = false;
+  }
+  const remaining = parseInt(val);
+  updateTimerUI(remaining);
+
+  const btn = document.getElementById('timer-btn');
+  const hintEl = document.getElementById('rule-hint');
+  const labelEl = document.getElementById('ring-label');
+
+  if (remaining <= 0) {
+    playDing();
+    hintEl.textContent = '太棒了！眼睛感谢你 🎉';
+    btn.disabled = false;
+    btn.textContent = '↺ 再来一次';
+    labelEl.textContent = '';
+  } else {
+    hintEl.textContent = '拖动进度条调整，或点击按钮开始';
+    btn.disabled = false;
+    btn.textContent = remaining < TOTAL ? '▶ 从这里继续' : '▶ 开始 · 望远20秒';
+    labelEl.textContent = '秒';
+    // 更新按钮点击行为，从当前剩余时间继续
+    btn.onclick = () => resumeTimer(remaining);
+  }
+}
+
+function resumeTimer(fromRemaining) {
+  if (timerRunning) return;
+
+  const btn = document.getElementById('timer-btn');
+  const labelEl = document.getElementById('ring-label');
+  const hintEl = document.getElementById('rule-hint');
+
+  timerRunning = true;
+  let remaining = fromRemaining !== undefined ? fromRemaining : TOTAL;
+
+  btn.disabled = true;
+  btn.textContent = '👁 抬头，望向6米外...';
+  hintEl.textContent = '保持注视远处，让眼肌充分放松';
+  labelEl.textContent = '秒';
+
+  function tick() {
+    updateTimerUI(remaining);
+    if (remaining <= 0) {
+      clearInterval(timerInterval);
+      timerRunning = false;
+      playDing();
+      hintEl.textContent = '太棒了！眼睛感谢你 🎉';
+      btn.disabled = false;
+      btn.textContent = '↺ 再来一次';
+      btn.onclick = startTimer;
+      return;
+    }
+    remaining--;
+  }
+
+  tick();
+  timerInterval = setInterval(tick, 1000);
+}
+
+function startTimer() {
+  // 重置进度条到20再开始
+  const scrub = document.getElementById('timer-scrub');
+  if (scrub) scrub.value = TOTAL;
+  const btn = document.getElementById('timer-btn');
+  btn.onclick = startTimer;
+  resumeTimer(TOTAL);
+}
+
+function playDing() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(1046, ctx.currentTime); // C6 高音叮
+    gain.gain.setValueAtTime(0, ctx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.6, ctx.currentTime + 0.01); // 快速起音
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.8); // 自然衰减
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 1.8);
+  } catch(e) { /* 不支持则静默 */ }
+}
+
+// ===== 防止内部滚动与 Swiper 翻页冲突 =====
+let touchStartY = 0;
+document.querySelectorAll('.swiper-slide').forEach(slide => {
+  slide.addEventListener('touchstart', e => {
+    touchStartY = e.touches[0].clientY;
+  }, { passive: true });
+
+  slide.addEventListener('touchmove', e => {
+    const dy = e.touches[0].clientY - touchStartY;
+    const atTop = slide.scrollTop === 0;
+    const atBottom = slide.scrollTop + slide.clientHeight >= slide.scrollHeight - 1;
+    // 如果页面本身可滚动，且未到顶/底，则阻止 Swiper 翻页
+    if (slide.scrollHeight > slide.clientHeight) {
+      if ((dy > 0 && !atTop) || (dy < 0 && !atBottom)) {
+        e.stopPropagation();
+      }
+    }
+  }, { passive: true });
+});
+
+// ===== 近视模拟交互 =====
+const myopiaLevels = [
+  {
+    min: 0, max: 5,
+    blur: 0, label: '正常视力', badgeColor: '#2ecc71', badgeBorder: 'rgba(46,204,113,0.5)',
+    desc: '👁 你现在看到的，是正常视力的清晰世界。',
+    stat: '我们调查中仅 9.66% 的大学生保持无近视'
+  },
+  {
+    min: 5, max: 25,
+    blur: 1.2, label: '轻度近视 <300°', badgeColor: '#f1c40f', badgeBorder: 'rgba(241,196,15,0.5)',
+    desc: '😐 轻度模糊，近处尚清晰，远处文字开始发虚。',
+    stat: '38.16% 的受访者处于轻度近视（<300°）'
+  },
+  {
+    min: 25, max: 55,
+    blur: 2.8, label: '中度近视 300–600°', badgeColor: '#e67e22', badgeBorder: 'rgba(230,126,34,0.5)',
+    desc: '😟 黑板上的字已经模糊，坐后排几乎无法辨认内容。',
+    stat: '32.37% 的受访者处于中度近视（300–600°）'
+  },
+  {
+    min: 55, max: 80,
+    blur: 5.5, label: '高度近视 >600°', badgeColor: '#e74c3c', badgeBorder: 'rgba(231,76,60,0.6)',
+    desc: '😨 严重模糊，视野中心扭曲，面临视网膜脱离等不可逆风险。',
+    stat: '19.81% 的受访者已达高度近视（>600°）⚠️'
+  },
+  {
+    min: 80, max: 100,
+    blur: 10, label: '极高度近视 800°+', badgeColor: '#8e0000', badgeBorder: 'rgba(142,0,0,0.8)',
+    desc: '🚨 几乎失去实用视力，这是丽丽失明前的真实视野。',
+    stat: '高度近视发生视网膜脱落概率是常人的 7~8 倍'
+  }
+];
+
+function updateMyopiaSim(val) {
+  val = parseInt(val);
+  const level = myopiaLevels.find(l => val >= l.min && val <= l.max) || myopiaLevels[myopiaLevels.length - 1];
+
+  // 计算该区间内的插值 blur
+  const range = level.max - level.min;
+  const nextBlur = myopiaLevels[Math.min(myopiaLevels.indexOf(level) + 1, myopiaLevels.length - 1)].blur;
+  const t = range > 0 ? (val - level.min) / range : 1;
+  const blurVal = level.blur + (nextBlur - level.blur) * t;
+
+  // 应用模糊
+  const blurLayer = document.getElementById('simBlurLayer');
+  blurLayer.style.backdropFilter = `blur(${blurVal.toFixed(1)}px)`;
+  blurLayer.style.webkitBackdropFilter = `blur(${blurVal.toFixed(1)}px)`;
+
+  // 度数标签
+  const badge = document.getElementById('simDegreeBadge');
+  badge.textContent = level.label;
+  badge.style.color = level.badgeColor;
+  badge.style.borderColor = level.badgeBorder;
+
+  // 说明文字
+  document.getElementById('simDesc').textContent = level.desc;
+  const statEl = document.getElementById('simStat');
+  statEl.textContent = level.stat;
+  statEl.style.color = level.badgeColor;
+}
+
+// ===== 访谈音频播放器 =====
+function toggleAudio(audioId, playerId) {
+  const audio = document.getElementById(audioId);
+  const player = document.getElementById(playerId);
+  const btn = player.querySelector('.audio-play-btn');
+  const icon = btn.querySelector('.play-icon');
+
+  // 暂停其他所有音频
+  ['audio1','audio2'].forEach(id => {
+    if (id !== audioId) {
+      const other = document.getElementById(id);
+      if (other && !other.paused) {
+        other.pause();
+        const otherPlayer = document.getElementById(id.replace('audio','player'));
+        if (otherPlayer) {
+          otherPlayer.querySelector('.play-icon').textContent = '▶';
+          otherPlayer.querySelector('.audio-play-btn').classList.remove('playing');
+        }
+      }
+    }
+  });
+
+  if (audio.paused) {
+    audio.play();
+    icon.textContent = '⏸';
+    btn.classList.add('playing');
+  } else {
+    audio.pause();
+    icon.textContent = '▶';
+    btn.classList.remove('playing');
+  }
+}
+
+// 绑定音频进度更新
+function fmtTime(s) {
+  if (!s || isNaN(s)) return '0:00';
+  const m = Math.floor(s / 60);
+  const sec = Math.floor(s % 60);
+  return m + ':' + String(sec).padStart(2, '0');
+}
+
+// ===== 封面模糊解锁 =====
+function clearVision() {
+  document.getElementById('cover-content').classList.add('clear');
+  setTimeout(() => {
+    document.getElementById('blur-overlay').classList.add('hidden');
+  }, 400);
+}
+
+// ===== 开场立即触发一次故障 =====
+function triggerGlitchOnce() {
+  const texts = document.querySelectorAll('.glitch-text');
+  const scratches = document.querySelectorAll('.scratch');
+  texts.forEach(el => {
+    el.style.animation = 'none';
+    el.offsetHeight;
+    el.style.animation = 'glitch-main 0.6s steps(1) 1';
+  });
+  scratches.forEach(el => {
+    el.style.animation = 'none';
+    el.offsetHeight;
+    el.style.animation = 'scratch-anim 0.6s steps(1) 1';
+  });
+  document.querySelectorAll('.glitch-wrap').forEach(wrap => {
+    wrap.classList.add('glitch-once');
+    setTimeout(() => {
+      wrap.classList.remove('glitch-once');
+      texts.forEach(el => { el.style.animation = ''; });
+      scratches.forEach(el => { el.style.animation = ''; });
+    }, 700);
+  });
+}
+
+// ===== 统一初始化 =====
+document.addEventListener('DOMContentLoaded', () => {
+  // 开场故障
+  setTimeout(triggerGlitchOnce, 400);
+  // 封面 fade-up
+  document.querySelectorAll('#slide-cover .fade-up').forEach((el, i) => {
+    setTimeout(() => el.classList.add('visible'), 600 + i * 200);
+  });
+  // 音频进度绑定
+  ['1','2'].forEach(n => {
+    const audio = document.getElementById('audio' + n);
+    if (!audio) return;
+    audio.addEventListener('timeupdate', () => {
+      const pct = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
+      document.getElementById('fill' + n).style.width = pct + '%';
+      document.getElementById('cur' + n).textContent = fmtTime(audio.currentTime);
+    });
+    audio.addEventListener('loadedmetadata', () => {
+      document.getElementById('dur' + n).textContent = fmtTime(audio.duration);
+    });
+    audio.addEventListener('ended', () => {
+      document.getElementById('fill' + n).style.width = '0%';
+      const player = document.getElementById('player' + n);
+      player.querySelector('.play-icon').textContent = '▶';
+      player.querySelector('.audio-play-btn').classList.remove('playing');
+    });
+    const bg = document.getElementById('player' + n).querySelector('.audio-progress-bg');
+    bg.addEventListener('click', e => {
+      if (!audio.duration) return;
+      const rect = bg.getBoundingClientRect();
+      audio.currentTime = ((e.clientX - rect.left) / rect.width) * audio.duration;
+    });
+  });
+});
+</script>
+</body>
+</html>
